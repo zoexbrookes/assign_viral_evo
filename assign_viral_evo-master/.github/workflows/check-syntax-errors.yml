@@ -1,0 +1,73 @@
+name: 'Check homework submission before grading'
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  check-homework:
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Set up Python 3.10 environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install nbconvert==7.9 ipython biopython Pillow
+      
+      - name: Checkout Actions Repository
+        uses: actions/checkout@v4
+        with:
+          repository: UNSW-BINF/homework-actions
+          path: ./homework-actions
+
+      - name: Check Syntax
+        uses: ./homework-actions/action-notebook-syntax
+
+      - name: Explicit variables
+        uses: ./homework-actions/action-explicit-variables
+        with:
+          args: >
+            sars_cov_2_per_genome_per_day sars_cov_2_per_nt_per_day
+            ebola_per_genome_per_day ebola_per_nt_per_day
+            zika_per_genome_per_day zika_per_nt_per_day
+            need_for_JC_correction
+            reference_in_regression
+            comparing_mutation_rates
+            sense_types_of_viruses
+            sars_cov_2_faster_slower
+            mutation_molecular_mechanism
+            mutations_in_both_variants
+            same_mutation
+            alpha_from_delta
+            sars_cov_2_per_genome_per_day_k2p sars_cov_2_per_nt_per_day_k2p
+            jc_vs_k2p_distances
+            transitions_and_transversions
+        
+      - name: Notebook and helper_functions files present
+        uses: ./homework-actions/action-files-present
+
+      - name: Helper_functions compiles
+        uses: ./homework-actions/action-helper-compiles
+
+      - name: Check Images visible
+        uses: ./homework-actions/action-images-white
+      
+      - name: Check Images real SVG
+        uses: ./homework-actions/action-real-SVG-images
+      
+      - name: Images as SVGs
+        uses: ./homework-actions/action-stored-SVG
+        with:
+          args: >
+            problem1.svg
+            problem3.svg
+            problem4.svg
