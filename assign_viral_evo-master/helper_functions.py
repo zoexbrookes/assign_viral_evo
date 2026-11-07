@@ -1,4 +1,7 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd         
+from Bio import SeqIO
 
 def jukes_cantor(reference_sequence: str, distant_sequence: str) -> float:
     """The Jukes-Cantor correction for estimating genetic distances
@@ -63,3 +66,30 @@ def kimura_two_parameter(reference_sequence: str, distant_sequence: str) -> floa
 
     """
     raise NotImplementedError()
+
+def plot_seqs(ref_seq: str, fasta_file: str):
+    dates = []
+    distances = []
+    with open(fasta_file) as f:
+        for record in SeqIO.parse(f, "fasta"):
+            dates.append(record.description.split("|")[2])
+            distances.append(jukes_cantor(ref_seq, str(record.seq).upper()))
+
+    df = pd.DataFrame({"date": pd.to_datetime(dates, format = "mixed"), "dists": distances}) 
+    earliest = df["date"].min()
+    df["days"] = (df["date"] - earliest).dt.days
+
+    slope, intercept = np.polyfit(df["days"], df["dists"], 1)
+    gen_len = len(ref_seq)
+
+    sars_cov_2_per_genome_per_day = slope * gen_len
+    sars_cov_2_per_nt_per_day = slope
+    print("gen:", sars_cov_2_per_genome_per_day, "nt:", sars_cov_2_per_nt_per_day)
+
+    plt.scatter(df["days"], df["dists"], alpha = 0.6, label = "viral genomes")
+    plt.plot(df["days"], slope * df["days"] + intercept, color = "red", label = "regression fit")
+    plt.xlabel('days elapsed')
+    plt.ylabel('genetic distance')
+    plt.legend()
+    plt.show()
+    plt.savefig('problem.svg', format = 'svg')
