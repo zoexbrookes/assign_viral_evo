@@ -104,10 +104,10 @@ def mismatch_helper(ref_seq: str, variants: list[str]):
             for i in variants:
                 if i in line:
                     seqs.append(next(f))
-
+    
     index_mismatches = [0] * len(ref_seq)
     mismatches = 0
-    for a in variants:
+    for a in seqs:
         for index, (ref_nt, alt_nt) in enumerate(zip(ref_seq, a)):
             if alt_nt != ref_nt:
                 mismatches += 1
@@ -119,3 +119,4 @@ def mismatch_helper(ref_seq: str, variants: list[str]):
         n += 1
 
     return mismatches, index_mismatches
+123
