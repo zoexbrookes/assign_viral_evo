@@ -70,7 +70,11 @@ def kimura_two_parameter(reference_sequence: str, distant_sequence: str) -> floa
 def plot_seqs(ref_seq: str, fasta_file: str):
     dates = []
     distances = []
+
     with open(fasta_file) as f:
+        if "ebola" in fasta_file or "zika" in fasta_file:
+            next(f)
+            next(f)
         for record in SeqIO.parse(f, "fasta"):
             dates.append(record.description.split("|")[2])
             distances.append(jukes_cantor(ref_seq, str(record.seq).upper()))
@@ -92,4 +96,4 @@ def plot_seqs(ref_seq: str, fasta_file: str):
     plt.ylabel('genetic distance')
     plt.legend()
     plt.show()
-    plt.savefig('problem.svg', format = 'svg')
+ 
