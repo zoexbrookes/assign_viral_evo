@@ -96,4 +96,26 @@ def plot_seqs(ref_seq: str, fasta_file: str):
     plt.ylabel('genetic distance')
     plt.legend()
     plt.show()
- 
+
+def mismatch_helper(ref_seq: str, variants: list[str]):
+    seqs = []
+    with open("data/p1-sars-cov-2-variants.fasta") as f:
+        for line_num, line in enumerate(f):
+            for i in variants:
+                if i in line:
+                    seqs.append(next(f))
+
+    index_mismatches = [0] * len(ref_seq)
+    mismatches = 0
+    for a in variants:
+        for index, (ref_nt, alt_nt) in enumerate(zip(ref_seq, a)):
+            if alt_nt != ref_nt:
+                mismatches += 1
+                index_mismatches[index] += 1
+
+    n = 0
+    for i in index_mismatches:
+        index_mismatches[n] = i / len(variants)
+        n += 1
+
+    return mismatches, index_mismatches
