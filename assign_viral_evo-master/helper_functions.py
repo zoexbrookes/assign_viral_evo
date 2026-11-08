@@ -95,7 +95,8 @@ def plot_seqs(ref_seq: str, fasta_file: str):
     plt.xlabel('days elapsed')
     plt.ylabel('genetic distance')
     plt.legend()
-    plt.show()
+
+    return plt
 
 def mismatch_helper(ref_seq: str, variants: list[str]):
     seqs = []
@@ -119,4 +120,3 @@ def mismatch_helper(ref_seq: str, variants: list[str]):
         n += 1
 
     return mismatches, index_mismatches
-123
